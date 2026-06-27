@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三角洲行動 · 精細隨機裝備 + 音樂書籤</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: radial-gradient(ellipse at center, #1a2a2f, #0b1215);
+            font-family: 'Segoe UI', 'PingFang TC', system-ui, sans-serif;
+            color: #d0e0e8;
+            min-height: 100vh;
+            padding: 20px;
+            padding-right: 70px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(20, 35, 42, 0.85);
+            backdrop-filter: blur(4px);
+            border-radius: 40px;
+            padding: 30px 35px 40px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(100, 180, 200, 0.08);
+            border: 1px solid rgba(60, 140, 180, 0.12);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(60, 140, 180, 0.08);
+            padding-bottom: 18px;
+        }
+        .header h1 {
+            font-weight: 300;
+            font-size: 2.2rem;
+            letter-spacing: 6px;
+            color: #b8e6ff;
+            text-shadow: 0 0 40px rgba(60, 180, 255, 0.06);
+        }
+        .header h1 span {
+            color: #e8b830;
+        }
+        .header .badge {
+            background: rgba(60, 140, 180, 0.12);
+            border: 1px solid rgba(60, 140, 180, 0.1);
+            border-radius: 60px;
+            padding: 8px 22px;
+            font-size: 0.85rem;
+            color: #8ab8d0;
+            letter-spacing: 1px;
+        }
+        .controls {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .btn {
+            background: rgba(40, 70, 85, 0.4);
+            border: 1px solid rgba(60, 140, 180, 0.1);
+            color: #c8dce8;
+            padding: 10px 32px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+            transition: all 0.1s ease;
+            letter-spacing: 1px;
+            font-family: inherit;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            background: rgba(60, 100, 120, 0.5);
+            color: #fff;
+        }
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+        }
+        .btn-primary {
+            background: linear-gradient(145deg, #1a6a40, #0f4a2a);
+            border-color: #3aaf7a;
+            color: #d4ffe0;
+            box-shadow: 0 4px 0 #0a2a18, 0 0 20px rgba(30, 150, 80, 0.06);
+        }
+        .btn-primary:hover {
+            background: #2a8a5a;
+        }
+        .btn-secondary {
+            background: rgba(50, 40, 60, 0.5);
+            border-color: rgba(160, 140, 180, 0.15);
+            color: #c8b8d8;
+        }
+
+        /* ===== 獎池勾選區 ===== */
+        .pool-section {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            padding: 16px 20px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(60, 140, 180, 0.06);
+        }
+        .pool-section .section-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #8ab8d0;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .pool-section .section-title .toggle-all {
+            font-size: 0.7rem;
+            background: rgba(60, 140, 180, 0.1);
+            border: 1px solid rgba(60, 140, 180, 0.1);
+            border-radius: 30px;
+            padding: 2px 14px;
+            cursor: pointer;
+            color: #7a9aaa;
+            transition: 0.1s;
+        }
+        .pool-section .section-title .toggle-all:hover {
+            background: rgba(60, 140, 180, 0.2);
+            color: #b0d8e8;
+        }
+        .pool-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 16px;
+        }
+        .pool-items label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            color: #b0c8d8;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .pool-items label:hover {
+            color: #d0e8f0;
+        }
+        .pool-items input[type="checkbox"] {
+            width: 14px;
+            height: 14px;
+            accent-color: #5ab08a;
+            cursor: pointer;
+        }
+
+        /* ===== 裝備展示 ===== */
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 10px;
+        }
+        .equip-card {
+            background: rgba(12, 26, 34, 0.6);
+            border: 1px solid rgba(60, 140, 180, 0.06);
+            border-radius: 20px;
+            padding: 16px 18px 18px;
+            backdrop-filter: blur(2px);
+            transition: 0.15s;
+            box-shadow: inset 0 0 0 1px rgba(60, 140, 180, 0.02);
+            position: relative;
+        }
+        .equip-card:hover {
+            border-color: rgba(60, 180, 220, 0.15);
+        }
+        .equip-card .category {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #5a8a9a;
+            border-bottom: 1px solid rgba(60, 140, 180, 0.06);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+        .equip-card .item-name {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #d0e8f0;
+            line-height: 1.4;
+        }
+        .equip-card .item-detail {
+            font-size: 0.8rem;
+            color: #7a9aaa;
+            margin-top: 6px;
+            line-height: 1.5;
+        }
+        .equip-card .value-tag {
+            position: absolute;
+            top: 12px;
+            right: 14px;
+            background: rgba(232, 184, 48, 0.12);
+            border: 1px solid rgba(232, 184, 48, 0.15);
+            border-radius: 30px;
+            padding: 2px 12px;
+            font-size: 0.7rem;
+            color: #e8b830;
+        }
+        .role-tag {
+            display: inline-block;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 2px 10px;
+            border-radius: 30px;
+            margin-top: 4px;
+        }
+        .role-tag.assault {
+            background: rgba(200, 60, 60, 0.2);
+            color: #ff8a8a;
+        }
+        .role-tag.medical {
+            background: rgba(60, 200, 100, 0.2);
+            color: #7ae8a0;
+        }
+        .role-tag.engineer {
+            background: rgba(60, 160, 200, 0.2);
+            color: #7ac8e8;
+        }
+        .role-tag.scout {
+            background: rgba(200, 180, 60, 0.2);
+            color: #e8d87a;
+        }
+        .ammo-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 8px 12px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid #e8b830;
+        }
+        .ammo-box .caliber {
+            font-size: 0.75rem;
+            color: #6a8a9a;
+        }
+        .ammo-box .count {
+            font-weight: 500;
+            color: #d4e8f0;
+        }
+        .attachment-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 10px;
+            margin-top: 8px;
+        }
+        .attachment-tag {
+            background: rgba(40, 70, 85, 0.3);
+            border-radius: 30px;
+            padding: 2px 12px;
+            font-size: 0.7rem;
+            color: #8ab8d0;
+            border: 1px solid rgba(60, 140, 180, 0.06);
+        }
+        .meds-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+        .med-tag {
+            background: rgba(180, 60, 60, 0.15);
+            border: 1px solid rgba(200, 80, 80, 0.1);
+            border-radius: 30px;
+            padding: 2px 14px;
+            font-size: 0.75rem;
+            color: #e8b0b0;
+        }
+        .map-tier {
+            display: inline-block;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 2px 10px;
+            border-radius: 30px;
+            margin-top: 4px;
+        }
+        .map-tier.tier-secret {
+            background: rgba(60, 140, 200, 0.15);
+            color: #7ac8e8;
+        }
+        .map-tier.tier-topsecret {
+            background: rgba(200, 60, 60, 0.2);
+            color: #ff8a8a;
+        }
+        .total-value-card {
+            grid-column: 1 / -1;
+            background: rgba(232, 184, 48, 0.06);
+            border: 1px solid rgba(232, 184, 48, 0.12);
+            border-radius: 20px;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 6px;
+        }
+        .total-value-card .label {
+            font-size: 0.9rem;
+            color: #8ab8d0;
+            letter-spacing: 1px;
+        }
+        .total-value-card .value {
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: #e8b830;
+        }
+        .total-value-card .value span {
+            font-size: 1rem;
+            color: #6a8a9a;
+            margin-left: 6px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #4a6a7a;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+        }
+
+        /* ===== 音樂書籤 ===== */
+        .music-toggle {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 999;
+            background: rgba(20, 40, 55, 0.8);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(60, 140, 180, 0.2);
+            border-right: none;
+            border-radius: 30px 0 0 30px;
+            padding: 14px 10px 14px 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.4);
+            color: #b8e6ff;
+            font-size: 1.6rem;
+            writing-mode: vertical-rl;
+            letter-spacing: 4px;
+            user-select: none;
+        }
+        .music-toggle:hover {
+            background: rgba(30, 60, 80, 0.9);
+            padding-right: 16px;
+            color: #fff;
+        }
+        .music-toggle .icon {
+            display: inline-block;
+            font-size: 1.8rem;
+            writing-mode: horizontal-tb;
+            margin-bottom: 6px;
+        }
+        .music-sidebar {
+            position: fixed;
+            top: 0;
+            right: -520px;
+            width: 500px;
+            height: 100vh;
+            background: rgba(12, 24, 34, 0.96);
+            backdrop-filter: blur(12px);
+            border-left: 1px solid rgba(60, 140, 180, 0.15);
+            box-shadow: -10px 0 50px rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 18px;
+            font-family: 'Segoe UI', 'PingFang TC', system-ui, sans-serif;
+            color: #d0e0e8;
+        }
+        .music-sidebar.open {
+            right: 0;
+        }
+        .music-sidebar .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(60, 140, 180, 0.06);
+            margin-bottom: 16px;
+            flex-wrap: nowrap;
+        }
+        .music-sidebar .header h2 {
+            font-weight: 300;
+            font-size: 1.3rem;
+            letter-spacing: 3px;
+            color: #b8e6ff;
+        }
+        .music-sidebar .close-btn {
+            background: none;
+            border: none;
+            color: #6a8a9a;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: 0.15s;
+            padding: 0 6px;
+        }
+        .music-sidebar .close-btn:hover {
+            color: #ff6b6b;
+            transform: rotate(90deg);
+        }
+        .search-area {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        .search-area input {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: 60px;
+            border: 1px solid rgba(60, 140, 180, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+            color: #d0e8f0;
+            font-size: 0.95rem;
+            outline: none;
+            transition: 0.15s;
+        }
+        .search-area input:focus {
+            border-color: rgba(60, 180, 220, 0.3);
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .search-area input::placeholder {
+            color: #4a6a7a;
+        }
+        .results-area {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .results-area::-webkit-scrollbar {
+            width: 4px;
+        }
+        .results-area::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+        .results-area::-webkit-scrollbar-thumb {
+            background: #2a5a6a;
+            border-radius: 4px;
+        }
+        .result-item {
+            display: flex;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 16px;
+            background: rgba(20, 40, 55, 0.3);
+            border: 1px solid rgba(60, 140, 180, 0.04);
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.15s;
+            align-items: center;
+        }
+        .result-item:hover {
+            background: rgba(30, 60, 80, 0.4);
+            border-color: rgba(60, 180, 220, 0.15);
+            transform: scale(1.01);
+        }
+        .result-item .thumbnail {
+            width: 80px;
+            height: 56px;
+            border-radius: 10px;
+            background: #1a2a2f;
+            flex-shrink: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #4a7a8a;
+            border: 1px solid rgba(60, 140, 180, 0.06);
+        }
+        .result-item .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .result-item .info {
+            flex: 1;
+            min-width: 0;
+        }
+        .result-item .info .title {
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: #d0e8f0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .result-item .info .artist {
+            font-size: 0.75rem;
+            color: #6a8a9a;
+            margin-top: 2px;
+        }
+        .result-item .info .play-hint {
+            font-size: 0.65rem;
+            color: #5ab08a;
+            margin-top: 2px;
+        }
+
+        .player-wrapper {
+            margin-top: 16px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #0a1a22;
+            border: 1px solid rgba(60, 140, 180, 0.06);
+            display: none;
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+        }
+        .player-wrapper.active {
+            display: block;
+        }
+        .player-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .no-results {
+            text-align: center;
+            color: #4a6a7a;
+            padding: 30px 0;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+        }
+
+        .fallback-link {
+            display: inline-block;
+            margin-top: 4px;
+            font-size: 0.65rem;
+            color: #5ab08a;
+            text-decoration: none;
+            border: 1px solid rgba(90, 176, 138, 0.15);
+            border-radius: 30px;
+            padding: 2px 14px;
+            transition: 0.15s;
+        }
+        .fallback-link:hover {
+            background: rgba(90, 176, 138, 0.1);
+            color: #7ae0b0;
+        }
+
+        /* 響應式 */
+        @media (max-width: 700px) {
+            .container {
+                padding: 20px 18px 25px;
+            }
+            .header h1 {
+                font-size: 1.6rem;
+                letter-spacing: 3px;
+            }
+            .equipment-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .btn {
+                padding: 8px 20px;
+                font-size: 0.85rem;
+            }
+            .music-sidebar {
+                width: 360px;
+                right: -380px;
+            }
+            .music-toggle {
+                font-size: 1.2rem;
+                padding: 10px 6px 10px 10px;
+            }
+            .music-toggle .icon {
+                font-size: 1.4rem;
+            }
+            .result-item .thumbnail {
+                width: 60px;
+                height: 42px;
+            }
+        }
+        @media (max-width: 480px) {
+            .equipment-grid {
+                grid-template-columns: 1fr;
+            }
+            .music-sidebar {
+                width: 300px;
+                right: -320px;
+                padding: 14px 12px;
+            }
+            .search-area input {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ 三角洲 · <span>精細</span>裝備</h1>
+            <span class="badge">🎯 每項獨立勾選</span>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" id="randomBtn">🎲 隨機生成</button>
+            <button class="btn btn-secondary" id="resetBtn">⟳ 重置</button>
+        </div>
+
+        <div id="poolContainer"></div>
+        <div id="equipmentDisplay">
+            <div class="empty-state">⚙️ 點擊「隨機生成」獲取一套裝備</div>
+        </div>
+    </div>
+
+    <!-- 音樂書籤 -->
+    <div class="music-toggle" id="musicToggle">
+        <span class="icon">🎵</span>音樂書籤
+    </div>
+    <div class="music-sidebar" id="musicSidebar">
+        <div class="header">
+            <h2>🎵 音樂書籤</h2>
+            <button class="close-btn" id="musicCloseBtn">✕</button>
+        </div>
+        <div class="search-area">
+            <input type="text" id="searchInput" placeholder="搜尋歌曲、藝人..." />
+        </div>
+        <div class="results-area" id="resultsArea">
+            <div class="no-results">🔍 輸入關鍵字搜尋</div>
+        </div>
+        <div class="player-wrapper" id="playerWrapper">
+            <iframe id="playerIframe" src="" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // 1. 裝備資料庫（精簡版）
+        // ============================================================
+        const operators = [
+            { name: '紅狼', role: '突擊', ability: '戰術衝鋒' },
+            { name: '威龍', role: '突擊', ability: '火力壓制' },
+            { name: '無名', role: '突擊', ability: '潛行突襲' },
+            { name: '疾風', role: '突擊', ability: '快速突進' },
+            { name: '蜂醫', role: '醫療', ability: '醫療支援' },
+            { name: '蠱', role: '醫療', ability: '毒素治療' },
+            { name: '蝶', role: '醫療', ability: '快速救援' },
+            { name: '老黑', role: '工程', ability: '戰術指揮' },
+            { name: '烏魯魯', role: '工程', ability: '防禦工事' },
+            { name: '比特', role: '工程', ability: '電子干擾' },
+            { name: '盾哥', role: '工程', ability: '重型防護' },
+            { name: '液氮', role: '工程', ability: '冷凍陷阱' },
+            { name: '露娜', role: '探測', ability: '偵查追蹤' },
+            { name: '麥曉雯', role: '探測', ability: '情報分析' },
+            { name: '銀翼', role: '探測', ability: '無人偵查' },
+            { name: '回響', role: '探測', ability: '聲波探測' },
+        ];
+
+        const vests = [
+            { name: '輕量防彈背心', level: 'II級', weight: '2.8kg' },
+            { name: '戰術防彈背心', level: 'III級', weight: '4.0kg' },
+            { name: '重型防彈背心', level: 'IV級', weight: '5.6kg' },
+        ];
+
+        const helmets = [
+            { name: '輕量化頭盔', level: 'II級', weight: '1.2kg' },
+            { name: '戰術頭盔', level: 'III級', weight: '1.8kg' },
+            { name: '重型頭盔', level: 'IV級', weight: '2.4kg' },
+        ];
+
+        const guns = [
+            { name: 'M4A1', type: '突擊步槍', caliber: '5.56×45mm' },
+            { name: 'AKM', type: '突擊步槍', caliber: '7.62×39mm' },
+            { name: 'Vector', type: '衝鋒槍', caliber: '.45 ACP' },
+            { name: 'MP5', type: '衝鋒槍', caliber: '9×19mm' },
+            { name: 'AWM', type: '狙擊步槍', caliber: '.300 Win Mag' },
+        ];
+
+        const ammoPool = {
+            '5.56×45mm': ['M855 普通彈', 'M995 穿甲彈'],
+            '7.62×39mm': ['PS 普通彈', 'BP 穿甲彈'],
+            '.45 ACP': ['FMJ 普通彈', 'AP 穿甲彈'],
+            '9×19mm': ['PST 普通彈', 'PBP 穿甲彈'],
+            '.300 Win Mag': ['Mk248 精準彈', 'AP 穿甲彈']
+        };
+
+        function getAttachmentsForGun(gun) {
+            const type = gun.type;
+            const base = [
+                { category: '瞄準鏡', options: ['紅點瞄準鏡', '全息瞄準鏡'] },
+                { category: '槍口', options: ['消音器', '補償器'] },
+            ];
+            if (type === '突擊步槍') {
+                base.push({ category: '握把', options: ['垂直握把', '轉角握把'] });
+                base.push({ category: '槍托', options: ['標準槍托', '伸縮槍托'] });
+            }
+            return base;
+        }
+
+        const chestRigs = [
+            { name: '輕量胸掛', capacity: '4個彈匣', weight: '1.2kg' },
+            { name: '戰術胸掛', capacity: '6個彈匣', weight: '2.0kg' },
+        ];
+
+        const backpacks = [
+            { name: '小型背包', capacity: '20L', weight: '0.8kg' },
+            { name: '中型背包', capacity: '35L', weight: '1.4kg' },
+            { name: '大型背包', capacity: '50L', weight: '2.2kg' },
+        ];
+
+        const meds = [
+            { name: '急救包', type: '醫療', effect: '恢復大量生命值' },
+            { name: '繃帶', type: '醫療', effect: '停止流血' },
+            { name: '止痛藥', type: '藥品', effect: '減輕疼痛' },
+            { name: '強效注射器', type: '興奮劑', effect: '提升移動速度' },
+        ];
+
+        const maps = [
+            { name: '機密大壩', tier: '機密', desc: '水壩戰區' },
+            { name: '絕密航天', tier: '絕密', desc: '航天發射中心' },
+            { name: '機密核電站', tier: '機密', desc: '核電站設施' },
+        ];
+
+        // ============================================================
+        // 2. 工具函數
+        // ============================================================
+        function randomItem(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function randomMulti(arr, n) {
+            const result = [];
+            for (let i = 0; i < n; i++) {
+                result.push(randomItem(arr));
+            }
+            return result;
+        }
+
+        function getValueRange(category) {
+            const ranges = {
+                operator: [30000, 80000],
+                vest: [50000, 150000],
+                helmet: [20000, 80000],
+                chest: [20000, 60000],
+                backpack: [15000, 50000],
+                gun: [100000, 300000],
+                attachment: [10000, 50000],
+                ammo: [5000, 20000],
+                med: [3000, 15000],
+                map: [0, 0]
+            };
+            return ranges[category] || [0, 0];
+        }
+
+        function randomValue(category) {
+            const [min, max] = getValueRange(category);
+            return randomInt(min, max);
+        }
+
+        function generateLoadout(selectedItems) {
+            const result = { totalValue: 0 };
+            let totalValue = 0;
+
+            function pickOne(list, cat) {
+                if (!list || list.length === 0) return null;
+                const item = randomItem(list);
+                const val = randomValue(cat);
+                totalValue += val;
+                return { ...item, value: val };
+            }
+
+            if (selectedItems.operator && selectedItems.operator.length > 0)
+                result.operator = pickOne(selectedItems.operator, 'operator');
+            if (selectedItems.vest && selectedItems.vest.length > 0)
+                result.vest = pickOne(selectedItems.vest, 'vest');
+            if (selectedItems.helmet && selectedItems.helmet.length > 0)
+                result.helmet = pickOne(selectedItems.helmet, 'helmet');
+            if (selectedItems.chest && selectedItems.chest.length > 0)
+                result.chest = pickOne(selectedItems.chest, 'chest');
+            if (selectedItems.backpack && selectedItems.backpack.length > 0)
+                result.backpack = pickOne(selectedItems.backpack, 'backpack');
+
+            if (selectedItems.gun && selectedItems.gun.length > 0) {
+                const gun = pickOne(selectedItems.gun, 'gun');
+                result.gun = gun;
+                if (gun) {
+                    const attachCats = getAttachmentsForGun(gun);
+                    result.attachments = attachCats.map(cat => {
+                        const choice = randomItem(cat.options);
+                        const val = randomValue('attachment');
+                        totalValue += val;
+                        return { category: cat.category, choice: choice, value: val };
+                    });
+                    const ammoList = ammoPool[gun.caliber] || ['普通彈'];
+                    const bullet = randomItem(ammoList);
+                    const count = randomInt(60, 150);
+                    const ammoVal = randomValue('ammo');
+                    totalValue += ammoVal;
+                    result.bullet = { name: bullet, caliber: gun.caliber, count: count, value: ammoVal };
+                }
+            }
+
+            const medCount = randomInt(2, 4);
+            result.meds = randomMulti(meds, medCount).map(m => {
+                const val = randomValue('med');
+                totalValue += val;
+                return { ...m, value: val };
+            });
+
+            if (selectedItems.map && selectedItems.map.length > 0)
+                result.map = pickOne(selectedItems.map, 'map');
+
+            result.totalValue = totalValue;
+            return result;
+        }
+
+        function renderLoadout(loadout) {
+            if (!loadout) return `<div class="empty-state">⚙️ 點擊「隨機生成」獲取一套裝備</div>`;
+            const { operator, vest, helmet, chest, backpack, gun, attachments, bullet, meds, map, totalValue } = loadout;
+
+            let html = `<div class="equipment-grid">`;
+            if (operator) {
+                const roleMap = { '突擊': 'assault', '醫療': 'medical', '工程': 'engineer', '探測': 'scout' };
+                html += `
+                    <div class="equip-card operator-card">
+                        <div class="category">👤 探員 · ${operator.role}</div>
+                        <div class="item-name">${operator.name}</div>
+                        <div class="item-detail">${operator.ability}</div>
+                        <span class="role-tag ${roleMap[operator.role] || ''}">${operator.role}</span>
+                        <span class="value-tag">💰 ${operator.value.toLocaleString()} 哈夫幣</span>
+                    </div>`;
+            }
+            if (vest) html += `
+                    <div class="equip-card">
+                        <div class="category">🛡️ 防彈衣</div>
+                        <div class="item-name">${vest.name}</div>
+                        <div class="item-detail">等級 ${vest.level} · 重量 ${vest.weight}</div>
+                        <span class="value-tag">💰 ${vest.value.toLocaleString()} 哈夫幣</span>
+                    </div>`;
+            if (helmet) html += `
+                    <div class="equip-card">
+                        <div class="category">⛑️ 頭盔</div>
+                        <div class="item-name">${helmet.name}</div>
+                        <div class="item-detail">等級 ${helmet.level} · 重量 ${helmet.weight}</div>
+                        <span class="value-tag">💰 ${helmet.value.toLocaleString()} 哈夫幣</span>
+                    </div>`;
+            if (chest) html += `
+                    <div class="equip-card">
+                        <div class="category">🦺 胸掛</div>
+                        <div class="item-name">${chest.name}</div>
+                        <div class="item-detail">容量 ${chest.capacity} · 重量 ${chest.weight}</div>
+                        <span class="value-tag">💰 ${chest.value.toLocaleString()} 哈夫幣</span>
+                    </div>`;
+            if (backpack) html += `
+                    <div class="equip-card">
+                        <div class="category">🎒 背包</div>
+                        <div class="item-name">${backpack.name}</div>
+                        <div class="item-detail">容量 ${backpack.capacity} · 重量 ${backpack.weight}</div>
+                        <span class="value-tag">💰 ${backpack.value.toLocaleString()} 哈夫幣</span>
+                    </div>`;
+            if (gun) {
+                const attachHTML = attachments ? attachments.map(a =>
+                    `<span class="attachment-tag">${a.category}: ${a.choice}</span>`
+                ).join('') : '';
+                html += `
+                    <div class="equip-card">
+                        <div class="category">🔫 主武器</div>
+                        <div class="item-name">${gun.name} (${gun.type})</div>
+                        <div class="item-detail">口徑 ${gun.caliber}</div>
+                        <div class="attachment-list">${attachHTML}</div>
+                        <span class="value-tag">💰 ${gun.value.toLocaleString()} 哈夫幣</span>
+                    </div>`;
+            }
+            if (bullet) html += `
+                    <div class="equip-card">
+                        <div class="category">🎯 彈藥</div>
+                        <div class="ammo-box">
+                            <span>${bullet.caliber} · ${bullet.name}</span>
+                            <span class="count">${bullet.count} 發</span>
+                        </div>
+                        <span class="value-tag">💰 ${bullet.value.toLocaleString()} 哈夫幣</span>
+                    </div>`;
+            if (meds && meds.length > 0) {
+                const medTags = meds.map(m => `<span class="med-tag">${m.name}</span>`).join('');
+                const totalMedVal = meds.reduce((sum, m) => sum + m.value, 0);
+                html += `
+                    <div class="equip-card">
+                        <div class="category">💊 藥品</div>
+                        <div class="meds-list">${medTags}</div>
+                        <div class="item-detail" style="margin-top:6px;font-size:0.7rem;color:#5a8a9a;">共 ${meds.length} 項</div>
+                        <span class="value-tag">💰 ${totalMedVal.toLocaleString()} 哈夫幣</span>
+                    </div>`;
+            }
+            if (map) {
+                const tierClass = map.tier === '絕密' ? 'tier-topsecret' : 'tier-secret';
+                html += `
+                    <div class="equip-card">
+                        <div class="category">🗺️ 地圖</div>
+                        <div class="item-name">${map.name}</div>
+                        <div class="item-detail">${map.desc}</div>
+                        <span class="map-tier ${tierClass}">${map.tier}</span>
+                        <span class="value-tag">💰 0 哈夫幣</span>
+                    </div>`;
+            }
+            html += `
+                <div class="total-value-card">
+                    <span class="label">💰 戰備總價值</span>
+                    <span class="value">${totalValue.toLocaleString()} <span>哈夫幣</span></span>
+                </div>
+            </div>`;
+            return html;
+        }
+
+        // ============================================================
+        // 3. 獎池勾選介面
+        // ============================================================
+        const poolContainer = document.getElementById('poolContainer');
+        const equipmentDisplay = document.getElementById('equipmentDisplay');
+        const randomBtn = document.getElementById('randomBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const categories = [
+            { id: 'operator', label: '👤 探員', data: operators },
+            { id: 'vest', label: '🛡️ 防彈衣', data: vests },
+            { id: 'helmet', label: '⛑️ 頭盔', data: helmets },
+            { id: 'chest', label: '🦺 胸掛', data: chestRigs },
+            { id: 'backpack', label: '🎒 背包', data: backpacks },
+            { id: 'gun', label: '🔫 槍械', data: guns },
+            { id: 'map', label: '🗺️ 地圖', data: maps }
+        ];
+
+        let selectedItems = {};
+
+        function buildPoolUI() {
+            let html = '';
+            categories.forEach(cat => {
+                const items = cat.data;
+                html += `<div class="pool-section">`;
+                html += `<div class="section-title">
+                            ${cat.label}
+                            <span class="toggle-all" data-category="${cat.id}">全選</span>
+                            <span class="toggle-all" data-category="${cat.id}" data-action="none">取消全選</span>
+                            <span style="font-size:0.65rem;color:#4a6a7a;margin-left:auto;">已選 <span class="selected-count" id="count-${cat.id}">${items.length}</span>/${items.length}</span>
+                        </div>`;
+                html += `<div class="pool-items" data-category="${cat.id}">`;
+                items.forEach((item, index) => {
+                    html += `<label>
+                                <input type="checkbox" class="item-check" data-category="${cat.id}" data-index="${index}" checked>
+                                ${item.name}
+                            </label>`;
+                });
+                html += `</div></div>`;
+            });
+            poolContainer.innerHTML = html;
+
+            categories.forEach(cat => {
+                selectedItems[cat.id] = cat.data.slice();
+            });
+
+            document.querySelectorAll('.toggle-all').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const catId = this.dataset.category;
+                    const action = this.dataset.action || 'select';
+                    const checkboxes = document.querySelectorAll(`.item-check[data-category="${catId}"]`);
+                    const checked = action === 'select';
+                    checkboxes.forEach(cb => cb.checked = checked);
+                    updateSelected(catId);
+                    updateCount(catId);
+                });
+            });
+
+            document.querySelectorAll('.item-check').forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const catId = this.dataset.category;
+                    updateSelected(catId);
+                    updateCount(catId);
+                });
+            });
+
+            categories.forEach(cat => updateCount(cat.id));
+        }
+
+        function updateSelected(catId) {
+            const checkboxes = document.querySelectorAll(`.item-check[data-category="${catId}"]`);
+            const cat = categories.find(c => c.id === catId);
+            if (!cat) return;
+            const selected = [];
+            checkboxes.forEach((cb, idx) => {
+                if (cb.checked) {
+                    selected.push(cat.data[idx]);
+                }
+            });
+            selectedItems[catId] = selected;
+        }
+
+        function updateCount(catId) {
+            const count = selectedItems[catId] ? selectedItems[catId].length : 0;
+            const total = categories.find(c => c.id === catId).data.length;
+            const span = document.getElementById(`count-${catId}`);
+            if (span) span.textContent = count;
+        }
+
+        buildPoolUI();
+
+        function randomize() {
+            const anySelected = Object.values(selectedItems).some(arr => arr && arr.length > 0);
+            if (!anySelected) {
+                alert('請至少勾選一項裝備！');
+                return;
+            }
+            const loadout = generateLoadout(selectedItems);
+            equipmentDisplay.innerHTML = renderLoadout(loadout);
+        }
+
+        function resetDisplay() {
+            equipmentDisplay.innerHTML = `<div class="empty-state">⚙️ 點擊「隨機生成」獲取一套裝備</div>`;
+        }
+
+        randomBtn.addEventListener('click', randomize);
+        resetBtn.addEventListener('click', resetDisplay);
+        resetDisplay();
+
+        // ============================================================
+        // 4. 音樂書籤 — 只保留您指定的 6 首歌曲
+        // ============================================================
+        // 從您提供的 YouTube 連結中提取影片 ID
+        const songLibrary = [
+            {
+                title: '海嶼你',
+                artist: '馬也_Crabbit',
+                videoId: 'aGlVMnvsSio',
+                thumbnail: 'https://img.youtube.com/vi/aGlVMnvsSio/hqdefault.jpg'
+            },
+            {
+                title: '救贖',
+                artist: 'Three金',
+                videoId: 'r3r2ggMqgE8',
+                thumbnail: 'https://img.youtube.com/vi/r3r2ggMqgE8/hqdefault.jpg'
+            },
+            {
+                title: 'Beauty and a Beat',
+                artist: 'Justin Bieber ft. Nicki Minaj',
+                videoId: 'J9abt3xpdDU',
+                thumbnail: 'https://img.youtube.com/vi/J9abt3xpdDU/hqdefault.jpg'
+            },
+            {
+                title: 'DANCING IN MY ROOM',
+                artist: '347aidan',
+                videoId: 'HG_ZC9N_4NM',
+                thumbnail: 'https://img.youtube.com/vi/HG_ZC9N_4NM/hqdefault.jpg'
+            },
+            {
+                title: 'IRIS OUT',
+                artist: '米津玄師 Kenshi Yonezu',
+                videoId: 'LmZD-TU96q4',
+                thumbnail: 'https://img.youtube.com/vi/LmZD-TU96q4/hqdefault.jpg'
+            },
+            {
+                title: 'NIGHT DANCER (BIG Naughty Remix)',
+                artist: 'imase',
+                videoId: 'kagoEGKHZvU',
+                thumbnail: 'https://img.youtube.com/vi/kagoEGKHZvU/hqdefault.jpg'
+            }
+        ];
+
+        // ============================================================
+        // 5. 音樂功能（點擊直接在 YouTube 開啟）
+        // ============================================================
+        const musicToggle = document.getElementById('musicToggle');
+        const musicSidebar = document.getElementById('musicSidebar');
+        const musicCloseBtn = document.getElementById('musicCloseBtn');
+        const searchInput = document.getElementById('searchInput');
+        const resultsArea = document.getElementById('resultsArea');
+
+        function openSidebar() {
+            musicSidebar.classList.add('open');
+            renderResults(songLibrary);
+            searchInput.value = '';
+        }
+
+        function closeSidebar() {
+            musicSidebar.classList.remove('open');
+        }
+
+        musicToggle.addEventListener('click', openSidebar);
+        musicCloseBtn.addEventListener('click', closeSidebar);
+
+        function filterSongs() {
+            const query = searchInput.value.trim().toLowerCase();
+            if (!query) {
+                renderResults(songLibrary);
+                return;
+            }
+            const filtered = songLibrary.filter(item =>
+                item.title.toLowerCase().includes(query) ||
+                item.artist.toLowerCase().includes(query)
+            );
+            renderResults(filtered);
+        }
+
+        searchInput.addEventListener('input', filterSongs);
+
+        function renderResults(items) {
+            if (items.length === 0) {
+                resultsArea.innerHTML = `<div class="no-results">😕 找不到相關內容</div>`;
+                return;
+            }
+            let html = '';
+            items.forEach(item => {
+                html += `
+                    <div class="result-item" data-videoid="${item.videoId}">
+                        <div class="thumbnail">
+                            <img src="${item.thumbnail}" alt="${item.title}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='🎵'">
+                        </div>
+                        <div class="info">
+                            <div class="title">${item.title}</div>
+                            <div class="artist">${item.artist}</div>
+                            <a href="https://www.youtube.com/watch?v=${item.videoId}" target="_blank" class="fallback-link">▶ 在 YouTube 播放</a>
+                        </div>
+                    </div>
+                `;
+            });
+            resultsArea.innerHTML = html;
+        }
+
+        // 點擊外部關閉
+        document.addEventListener('click', function(e) {
+            if (musicSidebar.classList.contains('open')) {
+                const isInside = musicSidebar.contains(e.target);
+                const isToggle = musicToggle.contains(e.target);
+                if (!isInside && !isToggle) {
+                    closeSidebar();
+                }
+            }
+        });
+
+        console.log('🎵 音樂書籤已更新，共 ' + songLibrary.length + ' 首歌曲');
+        console.log('💰 貨幣：哈夫幣');
+        console.log('💡 點擊「在 YouTube 播放」按鈕即可聆聽');
+    </script>
+</body>
+</html>
